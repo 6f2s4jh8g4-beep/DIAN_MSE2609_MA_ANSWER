@@ -166,7 +166,9 @@ static void do_checkout(void)
         snprintf(r->name, NAME_LEN, "%s", g_cart.items[i].name);
         r->qty    = g_cart.items[i].qty;
         r->price  = g_cart.items[i].price;
-        r->amount = g_cart.items[i].price * g_cart.items[i].qty;
+        /* 按比例分摊折扣，保证 sum(amount) == 折后总额 */
+        r->amount = discount_apply(
+                        g_cart.items[i].price * g_cart.items[i].qty);
     }
 
     /* --- 4) 打印小票 --- */
@@ -284,7 +286,7 @@ static void admin_loop(void)
             printf("%s(%s) added. price=%.2f, stock=%d\n",
                 argv[2], argv[1], price, stock);
 
-            /* 库存为 0 时给个提醒 */
+            /* 库存为 0 时给个提醒 */   
             if (stock == 0) {
                 printf("Warning: current stock is 0, please restock before sale.\n");
             }
@@ -330,6 +332,39 @@ static void admin_loop(void)
             goods_save(&g_cat, GOODS_FILE);
             printf("%s stock is now %d.\n", g->name, g->stock);
         }
+        /* ---------- discount <percent> | off ---------- */
+        else if (strcmp(cmd, "discount") == 0) {
+            if (argc < 2) {
+                printf("Usage: discount <0-%d>  |  discount off\n", MAX_DISCOUNT);
+                printf("Current discount: %d%%\n", g_discount);
+                continue;
+            }
+
+            if (strcmp(argv[1], "off") == 0) {
+                discount_set(0);
+                printf("Discount is now OFF.\n");
+                continue;
+            }
+
+            char *endp = NULL;
+            long  p    = strtol(argv[1], &endp, 10);
+
+            if (endp == argv[1] || *endp != '\0'
+                || p < 0 || p > MAX_DISCOUNT) {
+                printf("ERROR: discount must be an integer between 0 and %d\n",
+                       MAX_DISCOUNT);
+                continue;
+            }
+
+            discount_set((int)p);
+
+            if (p == 0) {
+                printf("Discount is now OFF.\n");
+            } else {
+                printf("Discount is now %ld%%.\n", p);
+                discount_notify();
+            }
+        }
         /* ---------- 未知命令 ---------- */
         else {
             printf("Unknown admin command: %s  (type 'help')\n", cmd);
@@ -346,6 +381,7 @@ static void cashier_loop(void)
     char *argv[8];
 
     while (!g_quit) {
+        if (g_discount > 0) printf("[Discount %d%%] ", g_discount);
         printf("> ");
         fflush(stdout);
 

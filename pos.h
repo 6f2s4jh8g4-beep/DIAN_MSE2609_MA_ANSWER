@@ -130,4 +130,19 @@ int  split_csv(char* line, char* out[], int max);   /* 按逗号拆 CSV */
  * ========================================================= */
 int admin_auth(void);   /* 通过返回 1，失败返回 0 */
 
+/* =========================================================
+ *  折扣功能
+ * =========================================================
+ */
+extern int g_discount; /* 全局折扣百分比，0 表示无折扣 */
+
+/* 设置折扣（0- MAX_DISCOUNT） */
+void discount_set(int p);
+
+/* 当折扣变更时的通知（例如向终端输出或刷新状态） */
+void discount_notify(void);
+
+/* 将折扣应用到某一项金额，返回折后金额（保留到分） */
+double discount_apply(double amount);
+
 #endif /* POS_H */
