@@ -56,7 +56,7 @@ static void print_admin_help(void)
 {
     printf("--- admin commands ---\n");
     printf("  setprice <code> <price>\n");
-    printf("  itemadd  <code> <name> <price>\n");
+    printf("  itemadd  <code> <name> <price> [stock]\n");
     printf("  itemdel  <code>\n");
     printf("  restock  <code> <qty>\n");
     printf("  setstock <code> <qty>\n");
@@ -230,18 +230,64 @@ static void admin_loop(void)
             printf("Price updated.\n");
         }
         /* ---------- itemadd <code> <name> <price> ---------- */
+       /* ---------- itemadd <code> <name> <price> [stock] ---------- */
         else if (strcmp(cmd, "itemadd") == 0) {
-            if (argc < 4) { printf("Usage: itemadd <code> <name> <price>\n"); continue; }
+            if (argc < 4) {
+                printf("Usage: itemadd <code> <name> <price> [stock]\n");
+                continue;
+            }
+
             if (goods_find(&g_cat, argv[1])) {
                 printf("ERROR: code already exists\n");
                 continue;
             }
-            if (goods_add(&g_cat, argv[1], argv[2], atof(argv[3]), 0) != 0) {
+
+            /* 校验价格 */
+            char* endp = NULL;
+            double price = strtod(argv[3], &endp);
+            if (endp == argv[3] || *endp != '\0' || price < 0) {
+                printf("ERROR: price must be a non-negative number\n");
+                continue;
+            }
+
+            /* 默认库存为 0；如果输入了第 5 个参数，则校验库存 */
+            int stock = 0;
+            if (argc >= 5) {
+                endp = NULL;
+                long tmp = strtol(argv[4], &endp, 10);
+
+                if (endp == argv[4] || *endp != '\0') {
+                    printf("ERROR: stock must be an integer\n");
+                    continue;
+                }
+
+                if (tmp < 0) {
+                    printf("ERROR: stock is not enough (must be >= 0)\n");
+                    continue;
+                }
+
+                if (tmp > MAX_STOCK) {
+                    printf("ERROR: stock exceeds the limit (max %d)\n", MAX_STOCK);
+                    continue;
+                }
+
+                stock = (int)tmp;
+            }
+
+            if (goods_add(&g_cat, argv[1], argv[2], price, stock) != 0) {
                 printf("ERROR: cannot add item\n");
                 continue;
             }
+
             goods_save(&g_cat, GOODS_FILE);
-            printf("%s(%s) added.\n", argv[2], argv[1]);
+
+            printf("%s(%s) added. price=%.2f, stock=%d\n",
+                argv[2], argv[1], price, stock);
+
+            /* 库存为 0 时给个提醒 */
+            if (stock == 0) {
+                printf("Warning: current stock is 0, please restock before sale.\n");
+            }
         }
         /* ---------- itemdel <code> ---------- */
         else if (strcmp(cmd, "itemdel") == 0) {

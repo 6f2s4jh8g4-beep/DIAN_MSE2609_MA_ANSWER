@@ -23,6 +23,7 @@
 #define MAX_CART       64      /* 购物车最多条目数 */
 #define MAX_SALES      4096    /* 销售记录最大行数 */
 #define MAX_LINE       256     /* 命令行/文件行最大长度 */
+#define MAX_STOCK      999999   /* 单商品库存上限，防止误输入 */
 
 #define ADMIN_PASSWORD "admin123"   /* 管理员初始密码，可自行修改 */
 
