@@ -1,15 +1,7 @@
-/* =========================================================
- *  src/goods.c  —— 商品目录实现
- * ---------------------------------------------------------
- *  CSV 格式（文件：data/goods.csv）：
- *      code,name,price,stock
- *      001,Cola,3.50,70
- *      002,Lollipop,0.50,80
- *      003,Noodles,6.00,20
- * ========================================================= */
+/* 商品目录实现*/
 #include "pos.h"
 
-/* ---------- 首次运行时写入的默认商品 ---------- */
+/* 首次运行时写入的默认商品 */
 void goods_seed(GoodsCatalog *cat)
 {
     cat->count = 0;
@@ -18,7 +10,7 @@ void goods_seed(GoodsCatalog *cat)
     goods_add(cat, "003", "Noodles",  6.00, 20);
 }
 
-/* ---------- 按条码查找 ---------- */
+/* 按条码查找  */
 Goods *goods_find(GoodsCatalog *cat, const char *code)
 {
     for (int i = 0; i < cat->count; i++)
@@ -27,7 +19,7 @@ Goods *goods_find(GoodsCatalog *cat, const char *code)
     return NULL;
 }
 
-/* ---------- 新增商品 ---------- */
+/* 新增商品 */
 int goods_add(GoodsCatalog *cat, const char *code,
               const char *name, double price, int stock)
 {
@@ -42,7 +34,7 @@ int goods_add(GoodsCatalog *cat, const char *code,
     return 0;
 }
 
-/* ---------- 删除商品（后面的元素前移） ---------- */
+/* 删除商品（后面的元素前移）*/
 int goods_del(GoodsCatalog *cat, const char *code)
 {
     for (int i = 0; i < cat->count; i++) {
@@ -56,7 +48,7 @@ int goods_del(GoodsCatalog *cat, const char *code)
     return -1;   /* 未找到 */
 }
 
-/* ---------- 从 CSV 载入 ---------- */
+/* 从 CSV 载入 */
 int goods_load(GoodsCatalog *cat, const char *path)
 {
     FILE *fp = fopen(path, "r");
@@ -86,7 +78,7 @@ int goods_load(GoodsCatalog *cat, const char *path)
     return cat->count;
 }
 
-/* ---------- 保存到 CSV ---------- */
+/* 保存到 CSV */
 int goods_save(const GoodsCatalog *cat, const char *path)
 {
     FILE *fp = fopen(path, "w");
@@ -102,7 +94,7 @@ int goods_save(const GoodsCatalog *cat, const char *path)
     return 0;
 }
 
-/* ---------- 打印商品列表 ---------- */
+/*打印商品列表*/
 void goods_print(const GoodsCatalog *cat, int show_stock)
 {
     printf("%-12s %-6s %8s", "Item", "No.", "Pri.");

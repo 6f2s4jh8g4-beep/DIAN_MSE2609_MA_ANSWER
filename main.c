@@ -1,11 +1,10 @@
-/* =========================================================
- *  src/main.c  —— 主循环、命令解析
- * ---------------------------------------------------------
- *  数据文件放在可执行文件同目录的 data/ 下：
- *      data/goods.csv   商品目录
- *      data/sales.csv   销售记录
- *      data/day.txt     当前逻辑日
- * ========================================================= */
+/* 
+主循环、命令解析
+数据文件放在可执行文件同目录的 data/ 下：
+      data/goods.csv   商品目录
+      data/sales.csv   销售记录
+      data/day.txt     当前逻辑日
+*/
 #include "pos.h"
 
 /* Windows 用 _mkdir，Linux/Mac 用 mkdir */
@@ -22,21 +21,21 @@
 #define SALES_FILE "data/sales.csv"
 #define DAY_FILE   "data/day.txt"
 
-/* ---------- 全局状态 ---------- */
+/*全局状态*/
 static GoodsCatalog g_cat;    /* 商品目录 */
 static Cart         g_cart;   /* 当前购物车 */
 static SaleLog      g_log;    /* 销售记录缓存 */
 static int          g_day  = 1;   /* 当前逻辑日 */
 static int          g_quit = 0;   /* 退出标志 */
 
-/* ---------- 保存当前逻辑日 ---------- */
+/*保存当前逻辑日*/
 static void save_day(void)
 {
     FILE *fp = fopen(DAY_FILE, "w");
     if (fp) { fprintf(fp, "%d\n", g_day); fclose(fp); }
 }
 
-/* ---------- 帮助 ---------- */
+/*帮助*/
 static void print_cashier_help(void)
 {
     printf("--- cashier commands ---\n");
@@ -64,11 +63,7 @@ static void print_admin_help(void)
     printf("  back\n");
 }
 
-/* =========================================================
- *  扫码处理：一行里可能有多个条码
- *  例：> 001 001 002
- *      > -001
- * ========================================================= */
+/* 扫码处理 */
 static void handle_scan_line(char *argv[], int argc)
 {
     char touched[MAX_CART][CODE_LEN];
@@ -118,9 +113,7 @@ static void handle_scan_line(char *argv[], int argc)
     }
 }
 
-/* =========================================================
- *  结账
- * ========================================================= */
+/*结账*/
 static void do_checkout(void)
 {
     if (g_cart.count == 0) {
@@ -372,9 +365,7 @@ static void admin_loop(void)
     }
 }
 
-/* =========================================================
- *  收银员主循环
- * ========================================================= */
+/*收银员主循环*/
 static void cashier_loop(void)
 {
     char  line[MAX_LINE];
@@ -442,9 +433,7 @@ static void cashier_loop(void)
     }
 }
 
-/* =========================================================
- *  main
- * ========================================================= */
+/* main */
 int main(void)
 {
     /* 0) 准备数据目录（不存在就创建） */

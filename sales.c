@@ -1,15 +1,7 @@
-/* =========================================================
- *  src/sales.c  —— 销售记录实现
- * ---------------------------------------------------------
- *  CSV 格式（文件：data/sales.csv）：
- *      day,seq,time,code,name,qty,price,amount
- *      1,1,10:15:32,001,Cola,1,3.50,3.50
- *      1,1,10:15:32,002,Lollipop,1,0.50,0.50
- *  同一张小票由 (day, seq) 唯一标识，可能占多行。
- * ========================================================= */
+/*  销售记录实现*/
 #include "pos.h"
 
-/* ---------- 载入全部销售记录 ---------- */
+/* 载入全部销售记录 */
 int sales_load(SaleLog *log, const char *path)
 {
     log->count = 0;
@@ -43,7 +35,7 @@ int sales_load(SaleLog *log, const char *path)
     return log->count;
 }
 
-/* ---------- 追加写入 ---------- */
+/*追加写入*/
 int sales_append(const SaleRecord *rows, int n, const char *path)
 {
     FILE *fp = fopen(path, "a");   /* 追加模式 */
@@ -59,7 +51,7 @@ int sales_append(const SaleRecord *rows, int n, const char *path)
     return 0;
 }
 
-/* ---------- 某天最大流水号 ---------- */
+/*某天最大流水号*/
 int sales_max_seq(const SaleLog *log, int day)
 {
     int m = 0;
@@ -69,7 +61,7 @@ int sales_max_seq(const SaleLog *log, int day)
     return m;
 }
 
-/* ---------- 打印某天的销售报表 ---------- */
+/* 打印某天的销售报表*/
 void sales_report(const SaleLog *log, int day)
 {
     printf("Date: %d\n", day);

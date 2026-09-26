@@ -1,12 +1,7 @@
 
-/* =========================================================
- *  src/pos.h  —— 全局数据结构与接口声明
- * ---------------------------------------------------------
- *  说明：
- *  1. 本文件只放"声明"和"结构体定义"，不放函数实现。
- *  2. 头文件保护 #ifndef POS_H 只在本文件写一次。
- *  3. 其他 .c 文件只需 #include "pos.h"，不需要再写保护宏。
- * ========================================================= */
+/*全局数据结构
+头文件：结构化定义
+*/
 #ifndef POS_H
 #define POS_H
 
@@ -27,9 +22,7 @@
 
 #define ADMIN_PASSWORD "admin123"   /* 管理员初始密码，可自行修改 */
 
-/* =========================================================
- *  1. 商品目录
- * ========================================================= */
+/*商品目录*/
     typedef struct {
     char   code[CODE_LEN];      /* 条码，如 "001" */
     char   name[NAME_LEN];      /* 名称，如 "Cola" */
@@ -64,9 +57,7 @@ int    goods_del(GoodsCatalog* cat, const char* code);
 /* 打印商品列表，show_stock 为 1 时附带库存列 */
 void   goods_print(const GoodsCatalog* cat, int show_stock);
 
-/* =========================================================
- *  3. 购物车
- * ========================================================= */
+/* 购物车*/
 typedef struct {
     char   code[CODE_LEN];      /* 条码 */
     char   name[NAME_LEN];      /* 名称（快照） */
@@ -86,10 +77,7 @@ const CartItem* cart_get(const Cart* c, const char* code);   /* 查某条目 */
 double          cart_total(const Cart* c);                   /* 小计 */
 void            cart_print(const Cart* c, const char* title);/* 打印购物车 */
 
-/* =========================================================
- *  5. 销售记录
- *  CSV 每行格式：day,seq,time,code,name,qty,price,amount
- * ========================================================= */
+/*销售记录*/
 typedef struct {
     int    day;                 /* 逻辑日 */
     int    seq;                 /* 当日流水号 */
